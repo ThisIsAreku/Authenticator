@@ -1,0 +1,6 @@
+name: Authenticator
+main: fr.areku.Authenticator.Main
+author: ThisIsAreku
+website: http://areku.fr/
+version: 1.0
+description: Deals with Offline mode plugins
