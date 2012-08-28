@@ -3,8 +3,6 @@ package fr.areku.Authenticator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -13,13 +11,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class OfflineMode extends TimerTask {
+public class OfflineMode implements Runnable {
 
 	// private AuthDB AuthDBPlugin;
 	private OfflineModePluginAuthenticator selectedAuthPlugin;
 	private List<String> watchedPlayers;
 	private Authenticator parent;
-	private Timer t = null;
+	private int timerId = 0;
+	private boolean timerEnabled = false;
 	private String CLASS_PREFIX = "";
 
 	public OfflineMode(Authenticator main) {
@@ -61,23 +60,25 @@ public class OfflineMode extends TimerTask {
 						if (p != null) {
 							selectedAuthPlugin = authenticator;
 							selectedAuthPlugin.initialize(p);
-							Authenticator.log("Selected " + selectedAuthPlugin.getName()
+							Authenticator.log("Selected "
+									+ selectedAuthPlugin.getName()
 									+ " as offline mode plugin");
 							if (!selectedAuthPlugin.getRecommendedVersion()
 									.equals(p.getDescription().getVersion()
 											.trim())) {
-								Authenticator.log(
-										Level.WARNING,
-										selectedAuthPlugin.getName()
-												+ " version is '"
-												+ p.getDescription()
-														.getVersion()
-												+ "' while Authenticator is designed for '"
-												+ selectedAuthPlugin
-														.getRecommendedVersion()
-												+ "'");
-								Authenticator.log(Level.WARNING,
-										"It might not work as expected. Check or ask for an update !");
+								Authenticator
+										.log(Level.WARNING,
+												selectedAuthPlugin.getName()
+														+ " version is '"
+														+ p.getDescription()
+																.getVersion()
+														+ "' while Authenticator is designed for '"
+														+ selectedAuthPlugin
+																.getRecommendedVersion()
+														+ "'");
+								Authenticator
+										.log(Level.WARNING,
+												"It might not work as expected. Check or ask for an update !");
 							}
 							break;
 						}
@@ -91,6 +92,8 @@ public class OfflineMode extends TimerTask {
 
 			if (selectedAuthPlugin == null) {
 				Authenticator.log("No compatible offline mode plugin found");
+			}else{
+				//enableTimer();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,25 +102,25 @@ public class OfflineMode extends TimerTask {
 
 	public void enableTimer() {
 		if (!isTimerEnabled()) {
-			Authenticator.log("Timer : enabling..");
-			this.t = new Timer();
-			this.t.schedule(this, 0, 2000);
+			Authenticator.d("Timer : enabling..");
+			timerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(parent, this, 2, 20);
+			timerEnabled = true;
 		}
 	}
 
 	public void disableTimer() {
 		if (isTimerEnabled()) {
-			Authenticator.log("Timer : disabling..");
-			this.t.cancel();
-			this.t = null;
+			Authenticator.d("Timer : disabling..");
+			Bukkit.getScheduler().cancelTask(timerId);
+			timerEnabled = false;
 		}
 	}
 
 	public boolean isTimerEnabled() {
-		return (this.t != null);
+		return timerEnabled;
 	}
-	
-	public OfflineModePluginAuthenticator getSelectedAuthPlugin(){
+
+	public OfflineModePluginAuthenticator getSelectedAuthPlugin() {
 		return selectedAuthPlugin;
 	}
 
@@ -144,9 +147,14 @@ public class OfflineMode extends TimerTask {
 
 	@Override
 	public void run() {
-		Authenticator.d("watching " + watchedPlayers.size() + " player(s)");
-		if (watchedPlayers.isEmpty())
+		if (!isTimerEnabled())
 			return;
+		Authenticator.d("watching " + watchedPlayers.size() + " player(s)");
+		if (watchedPlayers.isEmpty()) {
+			Authenticator.d("watchedPlayer list is empty, stopping timer");
+			disableTimer();
+			return;
+		}
 		List<String> toRemove = new ArrayList<String>();
 		Player pl = null;
 		synchronized (watchedPlayers) {

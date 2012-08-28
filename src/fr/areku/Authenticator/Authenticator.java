@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.areku.commons.UpdateChecker;
@@ -16,16 +17,25 @@ public class Authenticator extends JavaPlugin {
 	private static Authenticator instance;
 	private List<OfflineModeListener> listeners;
 	private OfflineMode controller;
-	public static boolean DEBUG = false;
+	private boolean debugSwitch;
+
+	public static void setDebug(boolean state, Plugin enabler) {
+		instance.debugSwitch = state;
+		log("Debug " + (state ? "enabled" : "disabled") + " by "
+				+ enabler.getName());
+	}
+
+	public static boolean isDebug() {
+		return instance.debugSwitch;
+	}
 
 	public static void log(Level level, String m) {
 		instance.getLogger().log(level, m);
 	}
 
 	public static void d(Level level, String m) {
-		if (!DEBUG)
-			return;
-		instance.getLogger().log(level, "[DEBUG] " + m);
+		if (isDebug())
+			instance.getLogger().log(level, "[DEBUG] " + m);
 	}
 
 	public static void log(String m) {
@@ -39,6 +49,7 @@ public class Authenticator extends JavaPlugin {
 	@Override
 	public void onLoad() {
 		instance = this;
+		debugSwitch = false;
 		listeners = new ArrayList<OfflineModeListener>();
 		controller = new OfflineMode(this);
 	}
@@ -111,6 +122,10 @@ public class Authenticator extends JavaPlugin {
 
 	public static boolean isPlayerLoggedIn(Player p) {
 		return instance.controller.isPlayerLoggedIn(p);
+	}
+
+	public static boolean isUsingOfflineModePlugin() {
+		return instance.controller.isUsingOfflineModePlugin();
 	}
 
 }
