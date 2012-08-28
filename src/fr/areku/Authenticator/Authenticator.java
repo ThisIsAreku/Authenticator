@@ -11,11 +11,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import fr.areku.Authenticator.api.IOfflineModeListener;
 import fr.areku.commons.UpdateChecker;
 
 public class Authenticator extends JavaPlugin {
 	private static Authenticator instance;
-	private List<OfflineModeListener> listeners;
+	private List<IOfflineModeListener> listeners;
 	private OfflineMode controller;
 	private boolean debugSwitch;
 
@@ -50,7 +51,7 @@ public class Authenticator extends JavaPlugin {
 	public void onLoad() {
 		instance = this;
 		debugSwitch = false;
-		listeners = new ArrayList<OfflineModeListener>();
+		listeners = new ArrayList<IOfflineModeListener>();
 		controller = new OfflineMode(this);
 	}
 
@@ -100,7 +101,7 @@ public class Authenticator extends JavaPlugin {
 	public void notifyListeners(Player player) {
 		List<Integer> nulled = new ArrayList<Integer>();
 		int i = 0;
-		for (OfflineModeListener l : instance.listeners) {
+		for (IOfflineModeListener l : instance.listeners) {
 			if (l == null) {
 				nulled.add(i);
 			} else {
@@ -112,11 +113,11 @@ public class Authenticator extends JavaPlugin {
 			instance.listeners.remove(index);
 	}
 
-	public static void registerOfflineModeListener(OfflineModeListener l) {
+	public static void registerOfflineModeListener(IOfflineModeListener l) {
 		instance.listeners.add(l);
 	}
 
-	public static void deregisterOfflineModeListener(OfflineModeListener l) {
+	public static void deregisterOfflineModeListener(IOfflineModeListener l) {
 		instance.listeners.remove(l);
 	}
 
