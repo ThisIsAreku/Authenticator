@@ -15,7 +15,7 @@ public class InternalPlayerListener implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (controller.isUsingOfflineModePlugin()) {
-			Main.d("Player " + event.getPlayer().getName()
+			Authenticator.d("Player " + event.getPlayer().getName()
 					+ " loggedin, but using Offline-Mode");
 			controller.watchPlayerLogin(event.getPlayer().getName());
 			controller.enableTimer();

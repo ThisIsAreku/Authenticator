@@ -12,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.areku.commons.UpdateChecker;
 
-public class Main extends JavaPlugin {
-	private static Main instance;
+public class Authenticator extends JavaPlugin {
+	private static Authenticator instance;
 	private List<OfflineModeListener> listeners;
 	private OfflineMode controller;
 	public static boolean DEBUG = false;

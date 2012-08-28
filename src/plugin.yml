@@ -1,5 +1,5 @@
 name: Authenticator
-main: fr.areku.Authenticator.Main
+main: fr.areku.Authenticator.Authenticator
 author: ThisIsAreku
 website: http://areku.fr/
 version: 1.0

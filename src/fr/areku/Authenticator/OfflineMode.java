@@ -18,16 +18,16 @@ public class OfflineMode extends TimerTask {
 	// private AuthDB AuthDBPlugin;
 	private OfflineModePluginAuthenticator selectedAuthPlugin;
 	private List<String> watchedPlayers;
-	private Main parent;
+	private Authenticator parent;
 	private Timer t = null;
 	private String CLASS_PREFIX = "";
 
-	public OfflineMode(Main main) {
+	public OfflineMode(Authenticator main) {
 		parent = main;
 		watchedPlayers = Collections.synchronizedList(new ArrayList<String>());
 		CLASS_PREFIX = (this.getClass().getPackage().getName() + ".plugins")
 				.replace('.', '/');
-		Main.d(CLASS_PREFIX);
+		Authenticator.d(CLASS_PREFIX);
 	}
 
 	private String getClassFromPath(String pathname) {
@@ -54,19 +54,19 @@ public class OfflineMode extends TimerTask {
 						authenticator = (OfflineModePluginAuthenticator) this
 								.getClass().getClassLoader()
 								.loadClass(classname).newInstance();
-						Main.d("Found new OfflineModePlugin:"
+						Authenticator.d("Found new OfflineModePlugin:"
 								+ authenticator.getName());
 						Plugin p = Bukkit.getServer().getPluginManager()
 								.getPlugin(authenticator.getName());
 						if (p != null) {
 							selectedAuthPlugin = authenticator;
 							selectedAuthPlugin.initialize(p);
-							Main.log("Selected " + selectedAuthPlugin.getName()
+							Authenticator.log("Selected " + selectedAuthPlugin.getName()
 									+ " as offline mode plugin");
 							if (!selectedAuthPlugin.getRecommendedVersion()
 									.equals(p.getDescription().getVersion()
 											.trim())) {
-								Main.log(
+								Authenticator.log(
 										Level.WARNING,
 										selectedAuthPlugin.getName()
 												+ " version is '"
@@ -76,7 +76,7 @@ public class OfflineMode extends TimerTask {
 												+ selectedAuthPlugin
 														.getRecommendedVersion()
 												+ "'");
-								Main.log(Level.WARNING,
+								Authenticator.log(Level.WARNING,
 										"It might not work as expected. Check or ask for an update !");
 							}
 							break;
@@ -90,7 +90,7 @@ public class OfflineMode extends TimerTask {
 			jarFile.close();
 
 			if (selectedAuthPlugin == null) {
-				Main.log("No compatible offline mode plugin found");
+				Authenticator.log("No compatible offline mode plugin found");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,7 +99,7 @@ public class OfflineMode extends TimerTask {
 
 	public void enableTimer() {
 		if (!isTimerEnabled()) {
-			Main.log("Timer : enabling..");
+			Authenticator.log("Timer : enabling..");
 			this.t = new Timer();
 			this.t.schedule(this, 0, 2000);
 		}
@@ -107,7 +107,7 @@ public class OfflineMode extends TimerTask {
 
 	public void disableTimer() {
 		if (isTimerEnabled()) {
-			Main.log("Timer : disabling..");
+			Authenticator.log("Timer : disabling..");
 			this.t.cancel();
 			this.t = null;
 		}
@@ -135,16 +135,16 @@ public class OfflineMode extends TimerTask {
 		try {
 			return selectedAuthPlugin.isPlayerLoggedIn(player);
 		} catch (Exception e) {
-			Main.log(Level.WARNING, "Cannot get player status with "
+			Authenticator.log(Level.WARNING, "Cannot get player status with "
 					+ selectedAuthPlugin.getName() + ": ");
-			Main.log(Level.WARNING, e.getLocalizedMessage());
+			Authenticator.log(Level.WARNING, e.getLocalizedMessage());
 		}
 		return false;
 	}
 
 	@Override
 	public void run() {
-		Main.d("watching " + watchedPlayers.size() + " player(s)");
+		Authenticator.d("watching " + watchedPlayers.size() + " player(s)");
 		if (watchedPlayers.isEmpty())
 			return;
 		List<String> toRemove = new ArrayList<String>();
@@ -154,7 +154,7 @@ public class OfflineMode extends TimerTask {
 				pl = Bukkit.getPlayerExact(p);
 				if (pl != null) {
 					if (isPlayerLoggedIn(pl)) {
-						Main.d("Player " + p + " is now auth");
+						Authenticator.d("Player " + p + " is now auth");
 						toRemove.add(p);
 						parent.notifyListeners(pl);
 					}
@@ -163,7 +163,7 @@ public class OfflineMode extends TimerTask {
 			}
 			watchedPlayers.removeAll(toRemove);
 			if (watchedPlayers.isEmpty()) {
-				Main.d("watchedPlayer list is empty, stopping timer");
+				Authenticator.d("watchedPlayer list is empty, stopping timer");
 				disableTimer();
 			}
 		}
