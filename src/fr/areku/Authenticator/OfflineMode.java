@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+
 public class OfflineMode implements Runnable {
 
 	// private AuthDB AuthDBPlugin;
@@ -164,7 +165,7 @@ public class OfflineMode implements Runnable {
 					if (isPlayerLoggedIn(pl)) {
 						Authenticator.d("Player " + p + " is now auth");
 						toRemove.add(p);
-						parent.notifyListeners(pl);
+						parent.notifyPlayerLogin(pl);
 					}
 				}
 				pl = null;

@@ -2,8 +2,6 @@ package fr.areku.Authenticator;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -11,19 +9,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import fr.areku.Authenticator.api.IOfflineModeListener;
+import fr.areku.Authenticator.events.PlayerOfflineModeLogin;
 import fr.areku.commons.UpdateChecker;
 
 public class Authenticator extends JavaPlugin {
 	private static Authenticator instance;
-	private List<IOfflineModeListener> listeners;
 	private OfflineMode controller;
 	private boolean debugSwitch;
 
 	public static void setDebug(boolean state, Plugin enabler) {
+		if (instance.debugSwitch != state)
+			log("Debug " + (state ? "enabled" : "disabled") + " by "
+					+ enabler.getName());
+		
 		instance.debugSwitch = state;
-		log("Debug " + (state ? "enabled" : "disabled") + " by "
-				+ enabler.getName());
 	}
 
 	public static boolean isDebug() {
@@ -51,7 +50,6 @@ public class Authenticator extends JavaPlugin {
 	public void onLoad() {
 		instance = this;
 		debugSwitch = false;
-		listeners = new ArrayList<IOfflineModeListener>();
 		controller = new OfflineMode(this);
 	}
 
@@ -98,27 +96,15 @@ public class Authenticator extends JavaPlugin {
 		}
 	}
 
-	public void notifyListeners(Player player) {
-		List<Integer> nulled = new ArrayList<Integer>();
-		int i = 0;
-		for (IOfflineModeListener l : instance.listeners) {
-			if (l == null) {
-				nulled.add(i);
-			} else {
-				l.onPlayerPluginLogin(player);
-			}
-			i++;
-		}
-		for (Integer index : nulled)
-			instance.listeners.remove(index);
+	public void notifyPlayerLogin(Player player) {
+		Bukkit.getPluginManager().callEvent(
+				new PlayerOfflineModeLogin(player, controller
+						.getSelectedAuthPlugin()));
 	}
 
-	public static void registerOfflineModeListener(IOfflineModeListener l) {
-		instance.listeners.add(l);
-	}
-
-	public static void deregisterOfflineModeListener(IOfflineModeListener l) {
-		instance.listeners.remove(l);
+	public void notifyPlayerLogout(Player player) {
+		// Bukkit.getPluginManager().callEvent(new
+		// PlayerOfflineModeLogout(player));
 	}
 
 	public static boolean isPlayerLoggedIn(Player p) {
