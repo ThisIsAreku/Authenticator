@@ -15,7 +15,7 @@ import fr.areku.commons.UpdateChecker;
 public class Authenticator extends JavaPlugin {
 	private static Authenticator instance;
 	private OfflineMode controller;
-	private boolean debugSwitch;
+	private boolean debugSwitch = false;
 
 	public static void setDebug(boolean state, Plugin enabler) {
 		if (instance.debugSwitch != state)
