@@ -27,7 +27,7 @@ public class AuthDBPlugin implements OfflineModePluginAuthenticator {
 
 	@Override
 	public String getRecommendedVersion() {
-		return "2.3.6.242";
+		return "2.3.7.300";
 	}
 
 }
