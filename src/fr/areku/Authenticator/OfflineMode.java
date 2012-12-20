@@ -10,15 +10,14 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
+import org.bukkit.scheduler.BukkitTask;
 
 public class OfflineMode implements Runnable {
 
-	// private AuthDB AuthDBPlugin;
 	private OfflineModePluginAuthenticator selectedAuthPlugin;
 	private List<String> watchedPlayers;
 	private Authenticator parent;
-	private int timerId = 0;
+	private BukkitTask timerId = null;
 	private boolean timerEnabled = false;
 	private String CLASS_PREFIX = "";
 
@@ -56,6 +55,7 @@ public class OfflineMode implements Runnable {
 								.loadClass(classname).newInstance();
 						Authenticator.d("Found new OfflineModePlugin:"
 								+ authenticator.getName());
+
 						Plugin p = Bukkit.getServer().getPluginManager()
 								.getPlugin(authenticator.getName());
 						if (p != null) {
@@ -93,8 +93,8 @@ public class OfflineMode implements Runnable {
 
 			if (selectedAuthPlugin == null) {
 				Authenticator.log("No compatible offline mode plugin found");
-			}else{
-				//enableTimer();
+			} else {
+				// enableTimer();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,7 +104,8 @@ public class OfflineMode implements Runnable {
 	public void enableTimer() {
 		if (!isTimerEnabled()) {
 			Authenticator.d("Timer : enabling..");
-			timerId = Bukkit.getScheduler().scheduleSyncRepeatingTask(parent, this, 2, 20);
+			timerId = Bukkit.getScheduler().runTaskTimer(parent,
+					this, 2, 20);
 			timerEnabled = true;
 		}
 	}
@@ -112,7 +113,7 @@ public class OfflineMode implements Runnable {
 	public void disableTimer() {
 		if (isTimerEnabled()) {
 			Authenticator.d("Timer : disabling..");
-			Bukkit.getScheduler().cancelTask(timerId);
+			timerId.cancel();
 			timerEnabled = false;
 		}
 	}

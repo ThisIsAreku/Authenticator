@@ -3,7 +3,8 @@ package fr.areku.Authenticator.plugins;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import uk.org.whoami.authme.cache.auth.PlayerCache;
+import uk.org.whoami.authme.api.API;
+
 import fr.areku.Authenticator.OfflineModePluginAuthenticator;
 
 public class AuthMePlugin implements OfflineModePluginAuthenticator {
@@ -16,8 +17,7 @@ public class AuthMePlugin implements OfflineModePluginAuthenticator {
 
 	@Override
 	public boolean isPlayerLoggedIn(Player player) {
-		return PlayerCache.getInstance().isAuthenticated(
-				player.getName().toLowerCase());
+		return API.isAuthenticated(player);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class AuthMePlugin implements OfflineModePluginAuthenticator {
 
 	@Override
 	public String getRecommendedVersion() {
-		return "2.6.7b5";
+		return "2.7.0";
 	}
 
 }
