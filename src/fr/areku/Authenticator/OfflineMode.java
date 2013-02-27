@@ -104,8 +104,7 @@ public class OfflineMode implements Runnable {
 	public void enableTimer() {
 		if (!isTimerEnabled()) {
 			Authenticator.d("Timer : enabling..");
-			timerId = Bukkit.getScheduler().runTaskTimer(parent,
-					this, 2, 20);
+			timerId = Bukkit.getScheduler().runTaskTimer(parent, this, 2, 20);
 			timerEnabled = true;
 		}
 	}
@@ -133,7 +132,18 @@ public class OfflineMode implements Runnable {
 	public void watchPlayerLogin(String player) {
 		synchronized (watchedPlayers) {
 			watchedPlayers.add(player);
+			enableTimer();
 		}
+	}
+
+	public void removeWatchedPlayer(String player) {
+		synchronized (watchedPlayers) {
+			watchedPlayers.remove(player);
+		}
+	}
+
+	public boolean isWatchingPlayer(String player) {
+		return watchedPlayers.contains(player);
 	}
 
 	public boolean isPlayerLoggedIn(Player player) {
@@ -172,10 +182,6 @@ public class OfflineMode implements Runnable {
 				pl = null;
 			}
 			watchedPlayers.removeAll(toRemove);
-			if (watchedPlayers.isEmpty()) {
-				Authenticator.d("watchedPlayer list is empty, stopping timer");
-				disableTimer();
-			}
 		}
 	}
 }

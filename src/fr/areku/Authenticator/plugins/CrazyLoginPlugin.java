@@ -27,7 +27,7 @@ public class CrazyLoginPlugin implements OfflineModePluginAuthenticator {
 	@Override
 	public String getRecommendedVersion() {
 		// TODO Auto-generated method stub
-		return "6.5";
+		return "7.9";
 	}
 
 }

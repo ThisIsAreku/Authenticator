@@ -28,7 +28,7 @@ public class xAuthPlugin implements OfflineModePluginAuthenticator {
 
 	@Override
 	public String getRecommendedVersion() {
-		return "2.0.25";
+		return "2.0.26";
 	}
 
 }

@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class InternalPlayerListener implements Listener {
@@ -23,5 +24,15 @@ public class InternalPlayerListener implements Listener {
 	}
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerQuitEvent(PlayerQuitEvent event) {
+		if (controller.isUsingOfflineModePlugin()) {
+			if(controller.isWatchingPlayer(event.getPlayer().getName()))
+			{
+				controller.removeWatchedPlayer(event.getPlayer().getName());
+			}
+		}
+	}
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onPlayerMoveEvent(PlayerMoveEvent event) {
 	}
 }
+  
